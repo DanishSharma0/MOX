@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+*.log
+data/Online Retail.xlsx
+data/online_retail.xlsx
+models/*.joblib
+results/*.png
+results/*.csv
+results/*.json
+reports/*.pdf
