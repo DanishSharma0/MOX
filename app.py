@@ -394,6 +394,47 @@ def _load_daily_df():
     return None
 
 
+def _download_dataset() -> bool:
+    """
+    Download the UCI Online Retail dataset ZIP and extract the xlsx.
+    Returns True on success, False on failure.
+    """
+    import io, zipfile, requests
+    UCI_ZIP = "https://archive.ics.uci.edu/static/public/352/online+retail.zip"
+    os.makedirs(config.DATA_DIR, exist_ok=True)
+    try:
+        progress_bar = st.progress(0, text="Connecting to UCI repository …")
+        resp = requests.get(UCI_ZIP, stream=True, timeout=60)
+        resp.raise_for_status()
+
+        total = int(resp.headers.get("content-length", 0))
+        chunks = []
+        downloaded = 0
+        for chunk in resp.iter_content(chunk_size=65536):
+            chunks.append(chunk)
+            downloaded += len(chunk)
+            if total:
+                pct = min(int(downloaded / total * 90), 90)
+                progress_bar.progress(pct, text=f"Downloading … {downloaded // 1024:,} KB")
+
+        progress_bar.progress(92, text="Extracting …")
+        z = zipfile.ZipFile(io.BytesIO(b"".join(chunks)))
+        for name in z.namelist():
+            if name.lower().endswith(".xlsx"):
+                data = z.read(name)
+                with open(config.DATASET_PATH, "wb") as f:
+                    f.write(data)
+                progress_bar.progress(100, text="✅ Download complete!")
+                return True
+
+        progress_bar.empty()
+        st.error("ZIP downloaded but no .xlsx file found inside.")
+        return False
+    except Exception as exc:
+        st.error(f"Download failed: {exc}")
+        return False
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Hero header
 # ─────────────────────────────────────────────────────────────────────────────
@@ -545,17 +586,44 @@ elif page == "📂 Dataset Management":
 
     dataset_exists = os.path.exists(config.DATASET_PATH)
     if dataset_exists:
-        st.success(f"✅ Dataset found at: `{config.DATASET_PATH}`")
-    else:
-        st.error(
-            "❌ Dataset not found.\n\n"
-            "**Download instructions:**\n"
-            "1. Go to https://archive.ics.uci.edu/dataset/352/online+retail\n"
-            "2. Download the ZIP file\n"
-            "3. Extract `Online Retail.xlsx`\n"
-            f"4. Place it in: `{config.DATA_DIR}`"
+        st.markdown(
+            '<div class="custom-success">✅ Dataset file found and ready to import.</div>',
+            unsafe_allow_html=True,
         )
-        st.stop()
+    else:
+        st.markdown(
+            '<div class="custom-warning">⚠️ Dataset file not found on this server. '
+            'Click <strong>Auto-Download</strong> below to fetch it automatically from UCI — '
+            'or import data from MongoDB if it was already imported before.</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown("")
+        dl_col, skip_col = st.columns([1, 3])
+        with dl_col:
+            if st.button("⬇️ Auto-Download Dataset", type="primary", use_container_width=True):
+                with st.spinner("Fetching dataset from UCI …"):
+                    success = _download_dataset()
+                if success:
+                    st.success("✅ Dataset downloaded! You can now import it.")
+                    st.rerun()
+                else:
+                    st.error("Auto-download failed. See instructions below.")
+                    st.markdown(
+                        "**Manual steps:**\n"
+                        "1. Go to https://archive.ics.uci.edu/dataset/352/online+retail\n"
+                        "2. Download & extract `Online Retail.xlsx`\n"
+                        f"3. Place it at: `{config.DATASET_PATH}`"
+                    )
+        with skip_col:
+            # If MongoDB already has data, let user skip dataset import
+            hc_quick = db.health_check()
+            if hc_quick["ok"] and db.get_all_sales():
+                st.markdown(
+                    '<div class="custom-info">ℹ️ MongoDB already has sales data — you can use all other pages without importing the dataset again.</div>',
+                    unsafe_allow_html=True,
+                )
+        if not dataset_exists:
+            st.stop()
 
     section_title("Import & Manage Data")
     col1, col2 = st.columns([1, 3])
