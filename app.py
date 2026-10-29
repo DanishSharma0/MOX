@@ -3,6 +3,7 @@ app.py — Streamlit Dashboard
 E-commerce Sales Prediction & Analytics System
 
 Sections:
+  0. Home Page
   A. Dashboard Overview
   B. Dataset Management
   C. Model Training & Evaluation
@@ -57,319 +58,579 @@ logging.basicConfig(level=logging.WARNING)
 # ─────────────────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="MOX · E-commerce Analytics",
-    page_icon="🛒",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CSS — premium dark theme with glassmorphism & micro-animations
+# CSS — MATRIX theme: premium black × neon green
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-/* Global reset */
+/* ── Global reset ── */
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
     color: #e2e8f0;
 }
 
-/* App background */
+/* ── Pure black app background ── */
 .stApp {
-    background: linear-gradient(135deg, #0a0a14 0%, #0d0f1e 40%, #0a1628 100%);
+    background: #000000;
     background-attachment: fixed;
 }
 
-/* Sidebar */
+/* ── Sidebar ── */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0d0f22 0%, #10142b 100%) !important;
-    border-right: 1px solid rgba(99, 102, 241, 0.2);
+    background: #080808 !important;
+    border-right: 1px solid rgba(0,255,136,0.12) !important;
 }
 section[data-testid="stSidebar"] .stRadio label {
-    font-size: 0.9rem !important;
-    padding: 0.5rem 0.75rem !important;
+    font-size: 0.88rem !important;
+    padding: 0.6rem 1rem !important;
     border-radius: 8px !important;
     transition: all 0.2s ease !important;
     cursor: pointer;
+    color: #6b7280 !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.01em;
 }
 section[data-testid="stSidebar"] .stRadio label:hover {
-    background: rgba(99,102,241,0.15) !important;
-    color: #a5b4fc !important;
+    background: rgba(0,255,136,0.06) !important;
+    color: #00ff88 !important;
+}
+section[data-testid="stSidebar"] .stRadio [data-checked="true"] label,
+section[data-testid="stSidebar"] .stRadio label[data-baseweb="radio"]:has(input:checked) {
+    background: rgba(0,255,136,0.08) !important;
+    color: #00ff88 !important;
+    border-left: 2px solid #00ff88 !important;
 }
 
-/* Hero banner */
-.hero-banner {
-    background: linear-gradient(135deg, #1e1b4b 0%, #1e3a5f 50%, #0c1a2e 100%);
-    border: 1px solid rgba(99,102,241,0.3);
-    border-radius: 16px;
-    padding: 2.2rem 2.5rem;
-    margin-bottom: 2rem;
+/* ── Home page hero ── */
+.home-hero {
+    background: #000000;
+    border: 1px solid rgba(0,255,136,0.1);
+    border-radius: 20px;
+    padding: 3.5rem 3rem;
+    margin-bottom: 2.5rem;
     position: relative;
     overflow: hidden;
 }
-.hero-banner::before {
+.home-hero::before {
     content: '';
     position: absolute;
-    top: -50%; right: -10%;
+    top: -120px; right: -80px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,255,136,0.06) 0%, transparent 65%);
+    pointer-events: none;
+    animation: glow-pulse 4s ease-in-out infinite alternate;
+}
+.home-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -60px;
     width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0,200,83,0.04) 0%, transparent 65%);
+    pointer-events: none;
+    animation: glow-pulse 6s ease-in-out infinite alternate-reverse;
+}
+@keyframes glow-pulse {
+    0%   { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 1;   transform: scale(1.2); }
+}
+.home-logo {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: #00ff88;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.home-logo::before {
+    content: '';
+    display: inline-block;
+    width: 8px; height: 8px;
+    background: #00ff88;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88;
+    animation: dot-blink 2s ease-in-out infinite;
+}
+@keyframes dot-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+.home-title {
+    font-size: 3.2rem;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    letter-spacing: -1.5px;
+}
+.home-title span {
+    color: #00ff88;
+    text-shadow: 0 0 30px rgba(0,255,136,0.5);
+}
+.home-subtitle {
+    font-size: 1.05rem;
+    color: #6b7280;
+    max-width: 600px;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    font-weight: 400;
+}
+.home-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #00ff88;
+    color: #000000;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 20px rgba(0,255,136,0.3);
+}
+.home-cta:hover {
+    background: #00e57a;
+    box-shadow: 0 0 40px rgba(0,255,136,0.5);
+    transform: translateY(-1px);
+}
+
+/* ── Feature cards (home page) ── */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+.feature-card {
+    background: #0a0a0a;
+    border: 1px solid rgba(0,255,136,0.08);
+    border-radius: 14px;
+    padding: 1.5rem 1.4rem;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00ff88, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.feature-card:hover {
+    border-color: rgba(0,255,136,0.25);
+    background: #0d0d0d;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,255,136,0.08);
+}
+.feature-card:hover::before {
+    opacity: 1;
+}
+.feature-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+.feature-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.01em;
+}
+.feature-desc {
+    font-size: 0.77rem;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+/* ── Stats row (home page) ── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.stat-tile {
+    background: #0a0a0a;
+    border: 1px solid rgba(0,255,136,0.08);
+    border-radius: 12px;
+    padding: 1.2rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.stat-number {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #00ff88;
+    font-family: 'JetBrains Mono', monospace;
+    text-shadow: 0 0 15px rgba(0,255,136,0.4);
+    line-height: 1;
+}
+.stat-label {
+    font-size: 0.75rem;
+    color: #4b5563;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.2rem;
+}
+
+/* ── Hero banner (inner pages) ── */
+.hero-banner {
+    background: #080808;
+    border: 1px solid rgba(0,255,136,0.1);
+    border-radius: 16px;
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.8rem;
+    position: relative;
+    overflow: hidden;
+    border-left: 3px solid #00ff88;
+}
+.hero-banner::after {
+    content: '';
+    position: absolute;
+    top: -60%; right: -5%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,255,136,0.04) 0%, transparent 65%);
     pointer-events: none;
 }
 .hero-title {
-    font-size: 2.2rem;
+    font-size: 1.9rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #a5b4fc, #e879f9, #fb7185);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0 0 0.4rem 0;
+    color: #ffffff;
+    margin: 0 0 0.3rem 0;
     letter-spacing: -0.5px;
 }
+.hero-title span { color: #00ff88; }
 .hero-subtitle {
-    font-size: 0.95rem;
-    color: #94a3b8;
+    font-size: 0.9rem;
+    color: #4b5563;
     margin: 0;
     font-weight: 400;
 }
 .hero-badge {
-    display: inline-block;
-    background: rgba(99,102,241,0.2);
-    border: 1px solid rgba(99,102,241,0.4);
-    color: #a5b4fc;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.2rem 0.6rem;
-    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.65rem;
+    border-radius: 4px;
     margin-right: 0.4rem;
-    margin-top: 0.8rem;
+    margin-top: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.07em;
 }
+.hero-badge.b1 { background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); color: #00ff88; }
+.hero-badge.b2 { background: rgba(0,200,83,0.1);  border: 1px solid rgba(0,200,83,0.3);  color: #00c853; }
+.hero-badge.b3 { background: rgba(0,230,118,0.08);border: 1px solid rgba(0,230,118,0.25);color: #69f0ae; }
+.hero-badge.b4 { background: rgba(0,255,136,0.06);border: 1px solid rgba(0,255,136,0.2); color: #b9f6ca; }
 
-/* KPI cards */
+/* ── KPI cards ── */
 .kpi-card {
-    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-    border: 1px solid rgba(99,102,241,0.2);
+    background: #0a0a0a;
+    border: 1px solid rgba(0,255,136,0.1);
     border-radius: 14px;
-    padding: 1.4rem 1.6rem;
+    padding: 1.5rem 1.6rem;
     text-align: center;
     position: relative;
     overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    backdrop-filter: blur(12px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
-.kpi-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(99,102,241,0.2);
-    border-color: rgba(99,102,241,0.45);
-}
-.kpi-card::before {
+.kpi-card::after {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
+    height: 2px;
     border-radius: 14px 14px 0 0;
 }
-.kpi-card.card-indigo::before  { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
-.kpi-card.card-pink::before    { background: linear-gradient(90deg, #ec4899, #f43f5e); }
-.kpi-card.card-teal::before    { background: linear-gradient(90deg, #14b8a6, #06b6d4); }
-.kpi-card.card-amber::before   { background: linear-gradient(90deg, #f59e0b, #f97316); }
-.kpi-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
+.kpi-card.card-g1::after { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+.kpi-card.card-g2::after { background: #00e676; box-shadow: 0 0 10px #00e676; }
+.kpi-card.card-g3::after { background: #69f0ae; box-shadow: 0 0 10px #69f0ae; }
+.kpi-card.card-g4::after { background: #b9f6ca; box-shadow: 0 0 10px #b9f6ca; }
+.kpi-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,255,136,0.25);
+    box-shadow: 0 10px 40px rgba(0,255,136,0.08);
+}
+.kpi-icon { font-size: 1.5rem; margin-bottom: 0.55rem; }
 .kpi-value {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #f1f5f9;
+    font-size: 1.85rem;
+    font-weight: 700;
     line-height: 1.1;
     margin-bottom: 0.3rem;
     font-family: 'JetBrains Mono', monospace;
+    color: #00ff88;
+    text-shadow: 0 0 20px rgba(0,255,136,0.4);
 }
 .kpi-label {
-    font-size: 0.75rem;
-    color: #64748b;
+    font-size: 0.7rem;
+    color: #374151;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     font-weight: 600;
 }
 
-/* Section headers */
+/* ── Section titles ── */
 .section-title {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    font-size: 1.1rem;
+    gap: 0.65rem;
+    font-size: 0.92rem;
     font-weight: 700;
-    color: #e2e8f0;
-    margin: 1.8rem 0 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(99,102,241,0.2);
+    color: #d1d5db;
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid rgba(0,255,136,0.08);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 .section-title .dot {
-    width: 8px; height: 8px;
+    width: 6px; height: 6px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #ec4899);
+    background: #00ff88;
+    box-shadow: 0 0 8px #00ff88;
     flex-shrink: 0;
 }
 
-/* Page pill */
+/* ── Page pill ── */
 .page-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    background: rgba(99,102,241,0.15);
-    border: 1px solid rgba(99,102,241,0.35);
-    color: #a5b4fc;
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 0.35rem 0.9rem;
-    border-radius: 999px;
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.2);
+    color: #00ff88;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.3rem 0.9rem;
+    border-radius: 4px;
     margin-bottom: 1.2rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.1em;
 }
 
-/* Status badges */
+/* ── Status badges ── */
 .status-online {
     display: inline-flex; align-items: center; gap: 0.4rem;
-    background: rgba(16,185,129,0.12);
-    border: 1px solid rgba(16,185,129,0.35);
-    color: #34d399;
-    font-size: 0.78rem; font-weight: 600;
-    padding: 0.3rem 0.7rem; border-radius: 999px;
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.25);
+    color: #00ff88;
+    font-size: 0.76rem; font-weight: 600;
+    padding: 0.3rem 0.75rem; border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
 }
 .status-offline {
     display: inline-flex; align-items: center; gap: 0.4rem;
-    background: rgba(239,68,68,0.12);
-    border: 1px solid rgba(239,68,68,0.35);
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
     color: #f87171;
-    font-size: 0.78rem; font-weight: 600;
-    padding: 0.3rem 0.7rem; border-radius: 999px;
+    font-size: 0.76rem; font-weight: 600;
+    padding: 0.3rem 0.75rem; border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
 }
 
-/* Sidebar brand */
+/* ── Sidebar brand ── */
 .sidebar-brand {
     font-size: 1.3rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #a5b4fc, #e879f9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 0.2rem;
+    font-weight: 900;
+    color: #00ff88;
+    letter-spacing: -0.5px;
+    text-shadow: 0 0 20px rgba(0,255,136,0.5);
+    margin-bottom: 0.1rem;
 }
 .sidebar-tagline {
-    font-size: 0.72rem;
-    color: #475569;
-    margin-bottom: 1.2rem;
+    font-size: 0.68rem;
+    color: #374151;
+    margin-bottom: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+}
+.sidebar-divider {
+    border: none;
+    border-top: 1px solid rgba(0,255,136,0.08);
+    margin: 1rem 0;
 }
 
-/* Info/warning/success boxes */
+/* ── Alert boxes ── */
 .custom-info {
-    background: rgba(99,102,241,0.08);
-    border: 1px solid rgba(99,102,241,0.3);
-    border-radius: 10px;
-    padding: 0.9rem 1.1rem;
-    font-size: 0.88rem;
-    color: #c7d2fe;
+    background: rgba(0,255,136,0.04);
+    border: 1px solid rgba(0,255,136,0.15);
+    border-left: 3px solid #00ff88;
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.86rem;
+    color: #6b7280;
 }
 .custom-success {
-    background: rgba(16,185,129,0.08);
-    border: 1px solid rgba(16,185,129,0.3);
-    border-radius: 10px;
-    padding: 0.9rem 1.1rem;
-    font-size: 0.88rem;
-    color: #6ee7b7;
+    background: rgba(0,200,83,0.05);
+    border: 1px solid rgba(0,200,83,0.2);
+    border-left: 3px solid #00c853;
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.86rem;
+    color: #69f0ae;
 }
 .custom-warning {
-    background: rgba(245,158,11,0.08);
-    border: 1px solid rgba(245,158,11,0.3);
-    border-radius: 10px;
-    padding: 0.9rem 1.1rem;
-    font-size: 0.88rem;
+    background: rgba(245,158,11,0.05);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-left: 3px solid #f59e0b;
+    border-radius: 8px;
+    padding: 0.85rem 1.1rem;
+    font-size: 0.86rem;
     color: #fcd34d;
 }
 
-/* Streamlit overrides */
-.stDataFrame { border-radius: 10px; overflow: hidden; }
+/* ── Streamlit overrides ── */
+.stDataFrame { border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,255,136,0.08) !important; }
 .stButton > button {
     border-radius: 8px !important;
     font-weight: 600 !important;
+    font-size: 0.86rem !important;
+    letter-spacing: 0.02em !important;
     transition: all 0.2s ease !important;
 }
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    background: #00ff88 !important;
     border: none !important;
-    color: white !important;
+    color: #000000 !important;
+    box-shadow: 0 0 20px rgba(0,255,136,0.25) !important;
 }
 .stButton > button[kind="primary"]:hover {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(99,102,241,0.4) !important;
+    background: #00e57a !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 30px rgba(0,255,136,0.4) !important;
 }
-div[data-testid="stMetricValue"] { font-family: 'JetBrains Mono', monospace !important; }
+.stButton > button:not([kind="primary"]) {
+    background: #111111 !important;
+    border: 1px solid rgba(0,255,136,0.15) !important;
+    color: #9ca3af !important;
+}
+.stButton > button:not([kind="primary"]):hover {
+    border-color: rgba(0,255,136,0.35) !important;
+    color: #00ff88 !important;
+    background: rgba(0,255,136,0.05) !important;
+}
+div[data-testid="stMetricValue"] {
+    font-family: 'JetBrains Mono', monospace !important;
+    color: #00ff88 !important;
+    text-shadow: 0 0 15px rgba(0,255,136,0.3) !important;
+}
+div[data-testid="stMetricLabel"] { color: #4b5563 !important; font-size: 0.75rem !important; }
+.stTabs [data-baseweb="tab"] {
+    font-weight: 600 !important;
+    font-size: 0.86rem !important;
+    color: #4b5563 !important;
+}
+.stTabs [data-baseweb="tab"][aria-selected="true"] {
+    color: #00ff88 !important;
+}
+.stTabs [data-baseweb="tab-list"] {
+    background: #080808 !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(0,255,136,0.08) !important;
+    gap: 0.25rem !important;
+    padding: 0.25rem !important;
+}
+.stTabs [data-baseweb="tab-highlight"] {
+    background: rgba(0,255,136,0.1) !important;
+    border-radius: 6px !important;
+}
+.stSelectbox > div > div,
+.stSlider > div {
+    background: #0a0a0a !important;
+    border-color: rgba(0,255,136,0.15) !important;
+    border-radius: 8px !important;
+}
+.stProgress > div > div { background: #00ff88 !important; border-radius: 99px !important; }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #0d0f1e; }
-::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #475569; }
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: #000000; }
+::-webkit-scrollbar-thumb {
+    background: rgba(0,255,136,0.3);
+    border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(0,255,136,0.6); }
 
-/* Project info table */
+/* ── Info table ── */
 .info-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
-    font-size: 0.88rem;
+    width: 100%; border-collapse: collapse;
+    margin: 1rem 0; font-size: 0.86rem;
 }
 .info-table th {
-    background: rgba(99,102,241,0.15);
-    color: #a5b4fc;
-    padding: 0.6rem 1rem;
+    background: rgba(0,255,136,0.06);
+    color: #00ff88;
+    padding: 0.65rem 1rem;
     text-align: left;
-    font-weight: 600;
-    font-size: 0.78rem;
+    font-weight: 700;
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid rgba(0,255,136,0.1);
 }
 .info-table td {
     padding: 0.6rem 1rem;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    color: #cbd5e1;
+    border-bottom: 1px solid rgba(0,255,136,0.04);
+    color: #6b7280;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
+}
+.info-table tr:hover td {
+    background: rgba(0,255,136,0.02);
+    color: #9ca3af;
 }
 .info-table tr:last-child td { border-bottom: none; }
 </style>
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Plotly theme helper
+# Plotly MATRIX theme
 # ─────────────────────────────────────────────────────────────────────────────
 
 PLOTLY_LAYOUT = dict(
     paper_bgcolor="rgba(0,0,0,0)",
-    plot_bgcolor="rgba(13,15,34,0.6)",
-    font=dict(family="Inter", color="#94a3b8", size=12),
+    plot_bgcolor="rgba(8,8,8,0.95)",
+    font=dict(family="Inter", color="#4b5563", size=11),
     xaxis=dict(
-        gridcolor="rgba(99,102,241,0.08)",
-        zerolinecolor="rgba(99,102,241,0.12)",
-        linecolor="rgba(99,102,241,0.2)",
+        gridcolor="rgba(0,255,136,0.05)",
+        zerolinecolor="rgba(0,255,136,0.08)",
+        linecolor="rgba(0,255,136,0.08)",
+        tickcolor="#374151",
+        tickfont=dict(color="#4b5563"),
     ),
     yaxis=dict(
-        gridcolor="rgba(99,102,241,0.08)",
-        zerolinecolor="rgba(99,102,241,0.12)",
-        linecolor="rgba(99,102,241,0.2)",
+        gridcolor="rgba(0,255,136,0.05)",
+        zerolinecolor="rgba(0,255,136,0.08)",
+        linecolor="rgba(0,255,136,0.08)",
+        tickcolor="#374151",
+        tickfont=dict(color="#4b5563"),
     ),
-    margin=dict(l=20, r=20, t=40, b=20),
+    margin=dict(l=20, r=20, t=45, b=20),
     legend=dict(
-        bgcolor="rgba(0,0,0,0)",
-        bordercolor="rgba(99,102,241,0.2)",
+        bgcolor="rgba(8,8,8,0.8)",
+        bordercolor="rgba(0,255,136,0.15)",
         borderwidth=1,
-        font=dict(size=11),
+        font=dict(size=11, color="#6b7280"),
     ),
     hoverlabel=dict(
-        bgcolor="#1e1b4b",
-        bordercolor="rgba(99,102,241,0.5)",
-        font=dict(family="Inter", size=12),
+        bgcolor="#0a0a0a",
+        bordercolor="rgba(0,255,136,0.4)",
+        font=dict(family="Inter", size=12, color="#00ff88"),
     ),
 )
 
@@ -436,37 +697,21 @@ def _download_dataset() -> bool:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Hero header
-# ─────────────────────────────────────────────────────────────────────────────
-
-st.markdown("""
-<div class="hero-banner">
-  <div class="hero-title">🛒 E-commerce Sales Analytics</div>
-  <div class="hero-subtitle">Intelligent sales prediction, forecasting &amp; business intelligence</div>
-  <div style="margin-top:0.8rem;">
-    <span class="hero-badge">MongoDB</span>
-    <span class="hero-badge">Scikit-learn</span>
-    <span class="hero-badge">Streamlit</span>
-    <span class="hero-badge">PyMongo</span>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────────────────────────────────────
 # Sidebar navigation
 # ─────────────────────────────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.markdown('<div class="sidebar-brand">MOX Analytics</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sidebar-tagline">E-commerce Intelligence Platform</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-brand">MOX</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-tagline">Analytics Platform</div>', unsafe_allow_html=True)
 
     page = st.radio(
         "Navigation",
         [
-            "📊 Dashboard Overview",
-            "📂 Dataset Management",
+            "🏠 Home",
+            "📊 Dashboard",
+            "📂 Dataset",
             "🤖 Model Training",
-            "🔮 Sales Forecasting",
+            "🔮 Forecasting",
             "📈 Analytics",
             "📜 Prediction History",
             "ℹ️ Project Info",
@@ -474,18 +719,18 @@ with st.sidebar:
         label_visibility="collapsed",
     )
 
-    st.markdown("---")
+    st.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
 
     hc = db.health_check()
     if hc["ok"]:
-        st.markdown('<div class="status-online">🟢 MongoDB Connected</div>', unsafe_allow_html=True)
-        st.caption(f"DB · `{config.DB_NAME}`")
+        st.markdown('<div class="status-online">● MongoDB</div>', unsafe_allow_html=True)
+        st.caption(f"`{config.DB_NAME}`")
     else:
-        st.markdown('<div class="status-offline">🔴 DB Offline</div>', unsafe_allow_html=True)
+        st.markdown('<div class="status-offline">● Offline</div>', unsafe_allow_html=True)
         st.caption(hc["message"])
 
-    st.markdown("---")
-    st.caption(f"🕐 {datetime.now().strftime('%b %d, %Y · %H:%M')}")
+    st.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+    st.caption(f"🕐 {datetime.now().strftime('%d %b %Y · %H:%M')}")
 
 
 def section_title(label: str):
@@ -500,18 +745,131 @@ def page_pill(label: str):
 
 
 # ═════════════════════════════════════════════════════════════════════════════
+# 0. HOME PAGE
+# ═════════════════════════════════════════════════════════════════════════════
+
+if page == "🏠 Home":
+    # Hero
+    st.markdown("""
+<div class="home-hero">
+  <div class="home-logo">MOX Analytics · Live</div>
+  <div class="home-title">
+    E-commerce<br><span>Intelligence</span> Platform
+  </div>
+  <div class="home-subtitle">
+    Predict revenue, train ML models, and generate sales forecasts powered by
+    real retail data. Built on MongoDB, Scikit-learn, and Streamlit.
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+    # Feature cards
+    st.markdown("""
+<div class="feature-grid">
+  <div class="feature-card">
+    <span class="feature-icon">📊</span>
+    <div class="feature-title">Live Dashboard</div>
+    <div class="feature-desc">Real-time KPIs, revenue trends, and model metric summaries at a glance.</div>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">🤖</span>
+    <div class="feature-title">ML Model Training</div>
+    <div class="feature-desc">Train regression and classification models with one click. Compare R², MAE, and F1.</div>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">🔮</span>
+    <div class="feature-title">Sales Forecasting</div>
+    <div class="feature-desc">Generate multi-day revenue forecasts. Export predictions as CSV instantly.</div>
+  </div>
+  <div class="feature-card">
+    <span class="feature-icon">📈</span>
+    <div class="feature-title">Product Analytics</div>
+    <div class="feature-desc">Top product rankings, monthly revenue trends, and daily distribution analysis.</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Stats row
+    daily_df_home = _load_daily_df()
+    if daily_df_home is not None and not daily_df_home.empty:
+        stats = db.get_total_stats()
+        total_rev  = stats.get("total_revenue",      daily_df_home["revenue"].sum())
+        total_tx   = stats.get("total_transactions", daily_df_home["num_transactions"].sum())
+        record_ct  = stats.get("record_count",       len(daily_df_home))
+        st.markdown(f"""
+<div class="stats-row">
+  <div class="stat-tile">
+    <div>
+      <div class="stat-number">£{total_rev/1_000_000:.1f}M</div>
+      <div class="stat-label">Total Revenue</div>
+    </div>
+  </div>
+  <div class="stat-tile">
+    <div>
+      <div class="stat-number">{total_tx:,.0f}</div>
+      <div class="stat-label">Transactions</div>
+    </div>
+  </div>
+  <div class="stat-tile">
+    <div>
+      <div class="stat-number">{record_ct:,}</div>
+      <div class="stat-label">Days of Data</div>
+    </div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+    else:
+        st.markdown("""
+<div class="custom-info">
+  ℹ️ No data loaded yet. Navigate to <strong>📂 Dataset</strong> in the sidebar to import your data and unlock all features.
+</div>
+""", unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Tech stack tags
+    section_title("Tech Stack")
+    c1, c2, c3, c4, c5 = st.columns(5)
+    for col, name, desc in [
+        (c1, "MongoDB", "NoSQL Database"),
+        (c2, "Scikit-learn", "Machine Learning"),
+        (c3, "Streamlit", "Dashboard UI"),
+        (c4, "Plotly", "Interactive Charts"),
+        (c5, "Pandas / NumPy", "Data Processing"),
+    ]:
+        col.markdown(f"""
+<div class="feature-card" style="text-align:center; padding:1rem;">
+  <div class="feature-title" style="color:#00ff88;">{name}</div>
+  <div class="feature-desc">{desc}</div>
+</div>""", unsafe_allow_html=True)
+
+
+# ═════════════════════════════════════════════════════════════════════════════
 # A. DASHBOARD OVERVIEW
 # ═════════════════════════════════════════════════════════════════════════════
 
-if page == "📊 Dashboard Overview":
-    page_pill("📊 Dashboard Overview")
+elif page == "📊 Dashboard":
+    st.markdown("""
+<div class="hero-banner">
+  <div class="hero-title">📊 Dashboard <span>Overview</span></div>
+  <div class="hero-subtitle">Live metrics, revenue trends & model performance</div>
+  <div style="margin-top:0.85rem;">
+    <span class="hero-badge b1">MongoDB</span>
+    <span class="hero-badge b2">Scikit-learn</span>
+    <span class="hero-badge b3">Streamlit</span>
+    <span class="hero-badge b4">PyMongo</span>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
     hc = db.health_check()
     daily_df = _load_daily_df()
 
     if daily_df is None or daily_df.empty:
         st.markdown(
-            '<div class="custom-info">ℹ️ No sales data found. Please go to <strong>📂 Dataset Management</strong> and import the dataset first.</div>',
+            '<div class="custom-info">ℹ️ No sales data found. Please go to <strong>📂 Dataset</strong> and import the dataset first.</div>',
             unsafe_allow_html=True,
         )
     else:
@@ -523,10 +881,10 @@ if page == "📊 Dashboard Overview":
 
         c1, c2, c3, c4 = st.columns(4)
         cards = [
-            (c1, "card-indigo", "💰", f"£{total_rev:,.0f}", "Total Revenue"),
-            (c2, "card-pink",   "📦", f"{total_qty:,.0f}", "Units Sold"),
-            (c3, "card-teal",   "🧾", f"{total_tx:,.0f}", "Transactions"),
-            (c4, "card-amber",  "📅", f"{record_ct:,}", "Days of Data"),
+            (c1, "card-g1", "💰", f"£{total_rev:,.0f}", "Total Revenue"),
+            (c2, "card-g2", "📦", f"{total_qty:,.0f}", "Units Sold"),
+            (c3, "card-g3", "🧾", f"{total_tx:,.0f}", "Transactions"),
+            (c4, "card-g4", "📅", f"{record_ct:,}", "Days of Data"),
         ]
         for col, cls, icon, val, lbl in cards:
             col.markdown(
@@ -548,9 +906,9 @@ if page == "📊 Dashboard Overview":
                 x=daily_df["date"],
                 y=daily_df["revenue"],
                 mode="lines",
-                line=dict(color="#818cf8", width=2),
+                line=dict(color="#00ff88", width=2),
                 fill="tozeroy",
-                fillcolor="rgba(99,102,241,0.08)",
+                fillcolor="rgba(0,255,136,0.04)",
                 name="Revenue",
                 hovertemplate="<b>%{x|%b %d, %Y}</b><br>Revenue: £%{y:,.0f}<extra></extra>",
             ))
@@ -559,11 +917,11 @@ if page == "📊 Dashboard Overview":
             st.plotly_chart(fig, use_container_width=True)
         except ImportError:
             fig, ax = plt.subplots(figsize=(14, 4))
-            ax.plot(daily_df["date"], daily_df["revenue"], color="#818cf8", linewidth=1.5)
-            ax.fill_between(daily_df["date"], daily_df["revenue"], alpha=0.12, color="#818cf8")
-            ax.set_facecolor("#0d0f22"); fig.patch.set_facecolor("#0d0f22")
-            ax.tick_params(colors="#94a3b8"); ax.spines[:].set_color("#1e293b")
-            ax.grid(axis="y", linestyle="--", alpha=0.2, color="#334155")
+            ax.plot(daily_df["date"], daily_df["revenue"], color="#00ff88", linewidth=1.5)
+            ax.fill_between(daily_df["date"], daily_df["revenue"], alpha=0.06, color="#00ff88")
+            ax.set_facecolor("#080808"); fig.patch.set_facecolor("#080808")
+            ax.tick_params(colors="#4b5563"); ax.spines[:].set_color("#111111")
+            ax.grid(axis="y", linestyle="--", alpha=0.1, color="#1a1a1a")
             st.pyplot(fig); plt.close()
 
         section_title("Latest Model Metrics")
@@ -581,7 +939,7 @@ if page == "📊 Dashboard Overview":
 # B. DATASET MANAGEMENT
 # ═════════════════════════════════════════════════════════════════════════════
 
-elif page == "📂 Dataset Management":
+elif page == "📂 Dataset":
     page_pill("📂 Dataset Management")
 
     dataset_exists = os.path.exists(config.DATASET_PATH)
@@ -592,7 +950,7 @@ elif page == "📂 Dataset Management":
         )
     else:
         st.markdown(
-            '<div class="custom-warning">⚠️ Dataset file not found on this server. '
+            '<div class="custom-warning">⚠️ Dataset file not found. '
             'Click <strong>Auto-Download</strong> below to fetch it automatically from UCI — '
             'or import data from MongoDB if it was already imported before.</div>',
             unsafe_allow_html=True,
@@ -615,7 +973,6 @@ elif page == "📂 Dataset Management":
                         f"3. Place it at: `{config.DATASET_PATH}`"
                     )
         with skip_col:
-            # If MongoDB already has data, let user skip dataset import
             hc_quick = db.health_check()
             if hc_quick["ok"] and db.get_all_sales():
                 st.markdown(
@@ -708,7 +1065,7 @@ elif page == "🤖 Model Training":
     daily_df = _load_daily_df()
     if daily_df is None:
         st.markdown(
-            '<div class="custom-warning">⚠️ Please import data in <strong>📂 Dataset Management</strong> first.</div>',
+            '<div class="custom-warning">⚠️ Please import data in <strong>📂 Dataset</strong> first.</div>',
             unsafe_allow_html=True,
         )
         st.stop()
@@ -719,9 +1076,9 @@ elif page == "🤖 Model Training":
 
     s1, s2, s3 = st.columns(3)
     for col, label, val, cls in [
-        (s1, "Training Days",   len(train_df), "card-indigo"),
-        (s2, "Validation Days", len(val_df),   "card-teal"),
-        (s3, "Test Days",       len(test_df),  "card-amber"),
+        (s1, "Training Days",   len(train_df), "card-g1"),
+        (s2, "Validation Days", len(val_df),   "card-g2"),
+        (s3, "Test Days",       len(test_df),  "card-g3"),
     ]:
         col.markdown(
             f'<div class="kpi-card {cls}">'
@@ -757,7 +1114,7 @@ elif page == "🤖 Model Training":
             metrics_df = pd.DataFrame(ss_get("reg_metrics"))
             section_title("Results")
             st.dataframe(
-                metrics_df.style.highlight_max("r2", color="#1e3a5f").highlight_min("mae", color="#1e3a5f"),
+                metrics_df.style.highlight_max("r2", color="#0a2a1a").highlight_min("mae", color="#0a2a1a"),
                 use_container_width=True,
             )
             if os.path.exists(config.MODEL_COMPARISON_PNG):
@@ -808,7 +1165,7 @@ elif page == "🤖 Model Training":
 # D. SALES FORECASTING
 # ═════════════════════════════════════════════════════════════════════════════
 
-elif page == "🔮 Sales Forecasting":
+elif page == "🔮 Forecasting":
     page_pill("🔮 Sales Forecasting")
 
     daily_df = _load_daily_df()
@@ -851,46 +1208,56 @@ elif page == "🔮 Sales Forecasting":
         section_title("Forecast Chart")
         hist_tail = daily_df.tail(90).copy()
 
+        # Ensure dates are proper datetime objects for both plotly and matplotlib
+        hist_tail["date"] = pd.to_datetime(hist_tail["date"])
+        forecast_df["date"] = pd.to_datetime(forecast_df["date"])
+
         try:
             import plotly.graph_objects as go
             fig = go.Figure()
             fig.add_trace(go.Scatter(
                 x=hist_tail["date"], y=hist_tail["revenue"],
                 mode="lines", name="Historical",
-                line=dict(color="#818cf8", width=2),
+                line=dict(color="#4b5563", width=2),
                 hovertemplate="<b>%{x|%b %d}</b><br>Historical: £%{y:,.0f}<extra></extra>",
             ))
             fig.add_trace(go.Scatter(
                 x=forecast_df["date"], y=forecast_df["predicted_revenue"],
                 mode="lines", name="Forecast",
-                line=dict(color="#f472b6", width=2.5, dash="dot"),
-                fill="tozeroy", fillcolor="rgba(244,114,182,0.07)",
+                line=dict(color="#00ff88", width=2.5, dash="dot"),
+                fill="tozeroy", fillcolor="rgba(0,255,136,0.04)",
                 hovertemplate="<b>%{x|%b %d}</b><br>Forecast: £%{y:,.0f}<extra></extra>",
             ))
+            # Format vline timestamp as YYYY-MM-DD to avoid ISO parsing issues
+            vline_x = hist_tail["date"].max().strftime("%Y-%m-%d")
             fig.add_vline(
-                x=str(hist_tail["date"].max()),
-                line_dash="dash", line_color="rgba(148,163,184,0.4)",
+                x=vline_x,
+                line_dash="dash", line_color="rgba(0,255,136,0.25)",
                 annotation_text="Forecast Start",
-                annotation_font_color="#94a3b8",
+                annotation_font_color="#00ff88",
                 annotation_font_size=11,
             )
             fig.update_layout(
                 **PLOTLY_LAYOUT, height=380,
                 xaxis_title="Date", yaxis_title="Revenue (£)",
                 title=dict(text=f"Revenue Forecast — Next {len(forecast_df)} Days",
-                           font=dict(size=14, color="#e2e8f0")),
+                           font=dict(size=13, color="#6b7280")),
             )
             st.plotly_chart(fig, use_container_width=True)
-        except ImportError:
+        except Exception:
+            # Matplotlib fallback — convert to proper Python datetime for compatibility
+            hist_dates = pd.to_datetime(hist_tail["date"]).dt.to_pydatetime()
+            fc_dates   = pd.to_datetime(forecast_df["date"]).dt.to_pydatetime()
+            hist_date_max = pd.to_datetime(hist_tail["date"]).max().to_pydatetime()
             fig, ax = plt.subplots(figsize=(14, 5))
-            ax.plot(hist_tail["date"], hist_tail["revenue"], color="#818cf8", linewidth=1.5, label="Historical")
-            ax.plot(forecast_df["date"], forecast_df["predicted_revenue"], color="#f472b6",
+            ax.plot(hist_dates, hist_tail["revenue"], color="#4b5563", linewidth=1.5, label="Historical")
+            ax.plot(fc_dates, forecast_df["predicted_revenue"], color="#00ff88",
                     linestyle="--", linewidth=2, label="Forecast")
-            ax.fill_between(forecast_df["date"], forecast_df["predicted_revenue"], alpha=0.1, color="#f472b6")
-            ax.axvline(x=hist_tail["date"].max(), color="#475569", linestyle=":", alpha=0.7, label="Forecast start")
+            ax.fill_between(fc_dates, forecast_df["predicted_revenue"], alpha=0.05, color="#00ff88")
+            ax.axvline(x=hist_date_max, color="#374151", linestyle=":", alpha=0.7, label="Forecast start")
             ax.legend(); ax.set_xlabel("Date"); ax.set_ylabel("Revenue (£)")
-            ax.set_facecolor("#0d0f22"); fig.patch.set_facecolor("#0d0f22")
-            ax.tick_params(colors="#94a3b8"); ax.grid(axis="y", linestyle="--", alpha=0.2, color="#334155")
+            ax.set_facecolor("#080808"); fig.patch.set_facecolor("#080808")
+            ax.tick_params(colors="#4b5563"); ax.grid(axis="y", linestyle="--", alpha=0.1, color="#111111")
             plt.tight_layout(); st.pyplot(fig); plt.close()
 
         section_title("Forecast Summary")
@@ -937,7 +1304,7 @@ elif page == "📈 Analytics":
             y=monthly["monthly_revenue"],
             marker=dict(
                 color=monthly["monthly_revenue"],
-                colorscale=[[0, "#312e81"], [0.5, "#6366f1"], [1, "#a5b4fc"]],
+                colorscale=[[0, "#0a2a1a"], [0.5, "#00c853"], [1, "#00ff88"]],
                 line=dict(color="rgba(0,0,0,0)", width=0),
             ),
             hovertemplate="<b>%{x}</b><br>Revenue: £%{y:,.0f}<extra></extra>",
@@ -946,10 +1313,10 @@ elif page == "📈 Analytics":
         st.plotly_chart(fig, use_container_width=True)
     except ImportError:
         fig, ax = plt.subplots(figsize=(14, 4))
-        ax.bar(monthly["year_month"], monthly["monthly_revenue"], color="#6366f1")
-        ax.set_facecolor("#0d0f22"); fig.patch.set_facecolor("#0d0f22")
-        ax.tick_params(colors="#94a3b8"); plt.xticks(rotation=45, ha="right")
-        ax.grid(axis="y", linestyle="--", alpha=0.2, color="#334155")
+        ax.bar(monthly["year_month"], monthly["monthly_revenue"], color="#00c853")
+        ax.set_facecolor("#080808"); fig.patch.set_facecolor("#080808")
+        ax.tick_params(colors="#4b5563"); plt.xticks(rotation=45, ha="right")
+        ax.grid(axis="y", linestyle="--", alpha=0.1, color="#111111")
         plt.tight_layout(); st.pyplot(fig); plt.close()
 
     st.dataframe(monthly, use_container_width=True)
@@ -965,7 +1332,7 @@ elif page == "📈 Analytics":
                 orientation="h",
                 marker=dict(
                     color=top["total_revenue"],
-                    colorscale=[[0, "#831843"], [0.5, "#ec4899"], [1, "#f9a8d4"]],
+                    colorscale=[[0, "#052a10"], [0.5, "#00c853"], [1, "#00ff88"]],
                 ),
                 hovertemplate="<b>%{y}</b><br>Revenue: £%{x:,.0f}<extra></extra>",
             ))
@@ -974,9 +1341,9 @@ elif page == "📈 Analytics":
             st.plotly_chart(fig2, use_container_width=True)
         except ImportError:
             fig2, ax2 = plt.subplots(figsize=(12, 5))
-            ax2.barh(top["Description"].str[:40], top["total_revenue"], color="#ec4899")
-            ax2.invert_yaxis(); ax2.set_facecolor("#0d0f22"); fig2.patch.set_facecolor("#0d0f22")
-            ax2.tick_params(colors="#94a3b8"); plt.tight_layout(); st.pyplot(fig2); plt.close()
+            ax2.barh(top["Description"].str[:40], top["total_revenue"], color="#00c853")
+            ax2.invert_yaxis(); ax2.set_facecolor("#080808"); fig2.patch.set_facecolor("#080808")
+            ax2.tick_params(colors="#4b5563"); plt.tight_layout(); st.pyplot(fig2); plt.close()
         st.dataframe(top, use_container_width=True)
     else:
         st.markdown(
@@ -990,7 +1357,7 @@ elif page == "📈 Analytics":
         hist_data = [daily_df["revenue"].dropna().tolist()]
         fig3 = ff.create_distplot(
             hist_data, ["Revenue"],
-            colors=["#14b8a6"],
+            colors=["#00ff88"],
             bin_size=(daily_df["revenue"].max() - daily_df["revenue"].min()) / 40,
             show_rug=False,
         )
@@ -998,9 +1365,9 @@ elif page == "📈 Analytics":
         st.plotly_chart(fig3, use_container_width=True)
     except Exception:
         fig3, ax3 = plt.subplots(figsize=(10, 4))
-        ax3.hist(daily_df["revenue"], bins=40, color="#14b8a6", edgecolor="#0d0f22", linewidth=0.5)
-        ax3.set_facecolor("#0d0f22"); fig3.patch.set_facecolor("#0d0f22")
-        ax3.tick_params(colors="#94a3b8"); ax3.grid(axis="y", linestyle="--", alpha=0.2, color="#334155")
+        ax3.hist(daily_df["revenue"], bins=40, color="#00c853", edgecolor="#080808", linewidth=0.5)
+        ax3.set_facecolor("#080808"); fig3.patch.set_facecolor("#080808")
+        ax3.tick_params(colors="#4b5563"); ax3.grid(axis="y", linestyle="--", alpha=0.1, color="#111111")
         plt.tight_layout(); st.pyplot(fig3); plt.close()
 
 
@@ -1019,7 +1386,7 @@ elif page == "📜 Prediction History":
     preds = db.get_predictions(limit=500)
     if not preds:
         st.markdown(
-            '<div class="custom-info">ℹ️ No predictions saved yet. Generate a forecast in <strong>🔮 Sales Forecasting</strong>.</div>',
+            '<div class="custom-info">ℹ️ No predictions saved yet. Generate a forecast in <strong>🔮 Forecasting</strong>.</div>',
             unsafe_allow_html=True,
         )
     else:
